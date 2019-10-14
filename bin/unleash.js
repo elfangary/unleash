@@ -13,7 +13,7 @@ const argv = require('yargs')
         alias: 'p',
         describe: 'The HTTP port you want to start unleash on',
         demand: false,
-        default: 4242,
+        default: 9292,
         type: 'number',
     })
     .option('host', {

@@ -1,17 +1,34 @@
 'use strict';
 
 const auth = require('basic-auth');
-const { User } = require('../lib/server-impl.js');
+const User = require('../lib/user');
 
 function basicAuthentication(app) {
+    const authUser = new User({
+        name: 'admin',
+        password: '1234admin',
+        email: 'admin@ta3limy.com',
+    });
+    // const savedUser = new User({ name: userName, password, email });
     app.use('/api/admin/', (req, res, next) => {
         const credentials = auth(req);
-
         if (credentials) {
-            // you will need to do some verification of credentials here.
-            const user = new User({ email: `${credentials.name}@domain.com` });
-            req.user = user;
-            next();
+            const user = new User({
+                name: credentials.name,
+                password: credentials.pass,
+                email: 'admin@ta3limy.com',
+            });
+            if (
+                user.password === authUser.password &&
+                user.name === authUser.name
+            ) {
+                next();
+            } else {
+                return res
+                    .status('401')
+                    .set({ 'WWW-Authenticate': 'Basic realm="example"' })
+                    .end('access denied');
+            }
         } else {
             return res
                 .status('401')
